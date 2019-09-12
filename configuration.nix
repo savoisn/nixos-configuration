@@ -42,7 +42,7 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim firefox git
+    wget vim firefox git zsh
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -100,14 +100,18 @@
   #   isNormalUser = true;
   #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
   # };
-  users.users.nico = {
-    uid = 1000;
-    isNormalUser = true;
-    home = "/home/nico";
-    description = "Nico";
-    extraGroups = [ "wheel" "networkmanager" ];
+  users.users = {
+    nico = {
+      shell = pkgs.zsh;
+      uid = 1000;
+      isNormalUser = true;
+      home = "/home/nico";
+      description = "Nico";
+      extraGroups = [ "wheel" "networkmanager" ];
+      initialPassword= "password";
+    };
   };
-  # users.mutableUsers = false;
+  users.mutableUsers = false;
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
