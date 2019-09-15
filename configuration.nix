@@ -9,6 +9,8 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
+  
+  time.timeZone = "Europe/Paris";
 
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
@@ -21,7 +23,17 @@
   boot.initrd.checkJournalingFS = false;
 
   # networking.hostName = "nixos"; # Define your hostname.
-  networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  networking.networkmanager.enable = true;
+
+  environment.pathsToLink = [ "/libexec" ];
+
+  fonts.fonts = with pkgs; [
+    hermit
+    source-code-pro
+    terminus_font
+  ];
 
   security.rngd.enable = false;
 
@@ -42,8 +54,10 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim firefox git zsh
+    wget vim firefox git rxvt_unicode zsh
   ];
+
+  environment.variables.EDITOR = "urxvt";
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -65,8 +79,10 @@
   # services.printing.enable = true;
 
   # Enable sound.
-  # sound.enable = true;
-  # hardware.pulseaudio.enable = true;
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
+
+  hardware.brightnessctl.enable = true;
 
   # Enable the X11 windowing system.
   services.xserver = {
@@ -80,16 +96,27 @@
       enable = true;
       extraPackages = with pkgs; [
         dmenu
-	i3status
-	i3lock
+        i3status
+        i3lock
+        i3blocks
+        networkmanagerapplet
       ];
     };
   };
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
+  services.xserver.layout = "us, fr";
+  services.xserver.xkbOptions = "eurosign:e";
 
   # Enable touchpad support.
   services.xserver.libinput.enable = true;
+
+
+   nixpkgs.config.allowUnfree = true;
+   virtualisation =  {
+     virtualbox.host.enable = true;
+     virtualbox.host.enableExtensionPack = true;
+
+     docker.enable = true;
+  };
 
   # Enable the KDE Desktop Environment.
   # services.xserver.displayManager.sddm.enable = true;
@@ -107,11 +134,11 @@
       isNormalUser = true;
       home = "/home/nico";
       description = "Nico";
-      extraGroups = [ "wheel" "networkmanager" ];
+      extraGroups = [ "wheel" "networkmanager" "video" "vim" "docker" "vboxusers" ];
       initialPassword= "password";
     };
   };
-  users.mutableUsers = false;
+  users.mutableUsers = true;
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database

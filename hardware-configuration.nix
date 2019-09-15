@@ -4,27 +4,29 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = [ ];
+  imports = [
+    <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+  ];
 
   boot.initrd.availableKernelModules = [ "ata_piix" "ohci_pci" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
+  boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/7eb250a0-8c70-469a-acb2-796cb8beb1ea";
+    { device = "/dev/disk/by-label/nixos";
       fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/D381-0FD4";
+    { device = "/dev/disk/by-label/boot";
       fsType = "vfat";
     };
 
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/9fecc758-d026-4d9f-95e3-7cbf65c82e31"; }
+    [ { device = "/dev/disk/by-label/swap"; }
     ];
 
-  nix.maxJobs = lib.mkDefault 1;
-  virtualisation.virtualbox.guest.enable = true;
+  nix.maxJobs = lib.mkDefault 4;
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 }
