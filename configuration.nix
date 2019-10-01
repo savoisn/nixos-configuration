@@ -54,7 +54,8 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim firefox git rxvt_unicode zsh
+    wget vim firefox git zsh rxvt_unicode_with-plugins
+    nix-prefetch-github
   ];
 
   environment.variables.EDITOR = "urxvt";
@@ -92,6 +93,7 @@
       xterm.enable = false;
     };
 
+
     windowManager.i3 = {
       enable = true;
       extraPackages = with pkgs; [
@@ -102,19 +104,28 @@
         networkmanagerapplet
       ];
     };
+    
+
+    displayManager = {
+      sessionCommands = ''
+        ${pkgs.networkmanagerapplet}/bin/nm-applet &
+      '';
+      slim = {
+        enable = true;
+        defaultUser = "nico";
+      };
+};
   };
   services.xserver.layout = "us, fr";
   services.xserver.xkbOptions = "eurosign:e";
-
   # Enable touchpad support.
   services.xserver.libinput.enable = true;
 
 
    nixpkgs.config.allowUnfree = true;
    virtualisation =  {
-     virtualbox.host.enable = true;
-     virtualbox.host.enableExtensionPack = true;
-
+     # virtualbox.host.enable = true;
+     # virtualbox.host.enableExtensionPack = true;
      docker.enable = true;
   };
 
