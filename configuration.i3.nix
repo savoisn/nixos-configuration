@@ -139,6 +139,7 @@
   # Enable touchpad support.
   services.xserver.libinput.enable = true;
 
+  services.udisks2.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   virtualisation =  {
