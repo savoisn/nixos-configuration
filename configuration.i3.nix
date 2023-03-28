@@ -6,11 +6,12 @@
 
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       <home-manager/nixos>
       ./hardware-configuration.nix
     ];
-  
+
   time.timeZone = "Europe/Paris";
 
 
@@ -63,12 +64,18 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim firefox git zsh
+    wget
+    vim
+    firefox
+    git
+    zsh
     nix-prefetch-github
   ];
 
   environment.variables.EDITOR = "nvim";
   environment.variables.TERMINAL = "alacritty";
+
+  programs.zsh.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -122,7 +129,7 @@
         rxvt-unicode
       ];
     };
-    
+
 
     displayManager = {
       defaultSession = "none+i3";
@@ -132,7 +139,7 @@
       lightdm = {
         enable = true;
       };
-};
+    };
   };
   services.xserver.layout = "us, fr";
   services.xserver.xkbOptions = "eurosign:e";
@@ -142,7 +149,7 @@
   services.udisks2.enable = true;
 
   nixpkgs.config.allowUnfree = true;
-  virtualisation =  {
+  virtualisation = {
     docker.enable = true;
   };
 
@@ -163,11 +170,11 @@
       home = "/home/nico";
       description = "Nico";
       extraGroups = [ "wheel" "networkmanager" "video" "vim" "docker" "vboxusers" ];
-      initialPassword= "password";
+      initialPassword = "password";
     };
   };
   users.mutableUsers = true;
-  home-manager.users.nico = import ./user-home;
+  home-manager.users.nico = import ./user_home;
 
 
   # This value determines the NixOS release with which your system is to be
