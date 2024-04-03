@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+VAL="init"
+
+case $button in
+  1) VAL="1" ;;
+  2) VAL="2" ;;
+  3) VAL="3" ;; # right click
+  4) VAL="4" ;; 
+  5) VAL="5" ;;
+  *) VAL="autre $button" ;;
+esac
+
+echo "$VAL"
+
+

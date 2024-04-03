@@ -14,12 +14,18 @@
 
   time.timeZone = "Europe/Paris";
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "steam"
+    "steamcmd"
+    "steam-original"
+    "steam-runtime"
     "slack"
     "google-chrome"
   ];
@@ -40,10 +46,11 @@
 
   environment.pathsToLink = [ "/libexec" ];
 
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     hermit
     source-code-pro
     terminus_font
+    nerdfonts
   ];
 
 
@@ -76,6 +83,7 @@
   environment.variables.TERMINAL = "alacritty";
 
   programs.zsh.enable = true;
+  programs.noisetorch.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -93,7 +101,7 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
   services.avahi.enable = true;
-  services.avahi.nssmdns = true;
+  services.avahi.nssmdns4 = true;
 
 
 

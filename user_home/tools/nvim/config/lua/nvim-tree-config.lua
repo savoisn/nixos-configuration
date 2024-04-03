@@ -1,14 +1,21 @@
-require'nvim-tree'.setup {
+require 'nvim-tree'.setup {
     disable_netrw       = true,
     hijack_netrw        = true,
-    open_on_setup       = false,
-    ignore_ft_on_setup  = {},
+    -- open_on_setup       = false,
+    --ignore_ft_on_setup  = {},
 
-    hijack_directories   = {
+    hijack_directories  = {
         enable = true,
         auto_open = true,
     },
-
+    git                 = {
+        enable = true,
+        ignore = false,
+        show_on_dirs = true,
+        show_on_open_dirs = true,
+        disable_for_dirs = {},
+        timeout = 400,
+    },
     open_on_tab         = false,
     hijack_cursor       = false,
     update_cwd          = false,
@@ -26,19 +33,15 @@ require'nvim-tree'.setup {
         update_cwd  = false,
         ignore_list = {}
     },
-    system_open = {
-    cmd  = nil,
-    args = {}
+    system_open         = {
+        cmd  = nil,
+        args = {}
     },
-    view = {
+    view                = {
         width = 25,
-        side = 'left',
-        mappings = {
-            custom_only = false,
-            list = {}
-        }
+        side = 'left'
     },
-    actions = {
+    actions             = {
         open_file = {
             resize_window = true
         }
@@ -46,8 +49,7 @@ require'nvim-tree'.setup {
 }
 
 require('legendary').keymaps({
-    { '<leader>tt', ':NvimTreeToggle<cr>', opts = { silent = true }, description = 'Nvim Tree: Toggle' },
-    { '<leader>tr', ':NvimTreeRefresh<cr>', opts = { silent = true }, description = 'Nvim Tree: Refresh' },
+    { '<leader>tt', ':NvimTreeToggle<cr>',   opts = { silent = true }, description = 'Nvim Tree: Toggle' },
+    { '<leader>tr', ':NvimTreeRefresh<cr>',  opts = { silent = true }, description = 'Nvim Tree: Refresh' },
     { '<leader>tf', ':NvimTreeFindFile<cr>', opts = { silent = true }, description = 'Nvim Tree: Find file' }
 })
-

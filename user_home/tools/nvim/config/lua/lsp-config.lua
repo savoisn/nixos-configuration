@@ -194,7 +194,35 @@ nvim_lsp.rnix.setup {
     end
 }
 -- Python
-default_lsp_setup('pyright')
+-- default_lsp_setup('pylsp')
+nvim_lsp.pylsp.setup {
+on_attach = on_attach,
+settings = {
+    pylsp = {
+    plugins = {
+        -- formatter options
+        black = { enabled = true },
+        autopep8 = { enabled = false },
+        yapf = { enabled = false },
+        -- linter options
+        pylint = { enabled = true, executable = "pylint" },
+        pyflakes = { enabled = false },
+        pycodestyle = { enabled = false },
+        -- type checker
+        pylsp_mypy = { enabled = true },
+        -- auto-completion options
+        jedi_completion = { fuzzy = true },
+        -- import sorting
+        pyls_isort = { enabled = true },
+    },
+    },
+},
+flags = {
+    debounce_text_changes = 200,
+},
+capabilities = capabilities,
+}
+
 -- Typescript
 nvim_lsp.tsserver.setup {
     init_options = require("nvim-lsp-ts-utils").init_options,
@@ -243,6 +271,29 @@ default_lsp_setup('html')
 -- JSON
 default_lsp_setup('jsonls')
 
+-- RUST
+nvim_lsp.rust_analyzer.setup({
+    on_attach = on_attach,
+    settings = {
+        ["rust-analyzer"] = {
+            imports = {
+                granularity = {
+                    group = "module",
+                },
+                prefix = "self",
+            },
+            cargo = {
+                buildScripts = {
+                    enable = true,
+                },
+            },
+            procMacro = {
+                enable = true
+            },
+        }
+    }
+})
+
 -- NULL
 require("null-ls").setup({
     sources = {
@@ -252,9 +303,6 @@ require("null-ls").setup({
         -- Nix
         require("null-ls").builtins.formatting.nixpkgs_fmt,
         require("null-ls").builtins.diagnostics.statix,
-        require("null-ls").builtins.code_actions.statix,
-
-        -- Python
-        require("null-ls").builtins.formatting.black
+        require("null-ls").builtins.code_actions.statix
     },
 })

@@ -12,16 +12,18 @@ in
 
   nixpkgs.config.permittedInsecurePackages = [
     "electron-13.6.9"
-    "python-2.7.18.6"
+    "electron-25.9.0"
   ];
 
   nixpkgs.config.allowUnfree = true;
 
   home.file.".xprofile".source = ./xprofile;
+  home.stateVersion = "22.05";
 
   manual.manpages.enable = false;
 
   home.packages = with pkgs; [
+    source-serif-pro
     acpi
     any-nix-shell
     audacious
@@ -30,8 +32,8 @@ in
     brightnessctl
     broot
     calibre
-    caddy
     cdrkit
+    dunst
     gnome.cheese
     cowsay
     dbeaver
@@ -42,19 +44,22 @@ in
     erlang
     exercism
     fasd
+    fd
     feh
     file
     fish
+    flutter
     ffmpeg-full
     fortune
     galculator
     gcc
-    gimp
+    gimp-with-plugins
     gitkraken
     gnumake
     go
     gromit-mpx
     gthumb
+    helix
     htop
     imagemagick
     inkscape
@@ -63,32 +68,38 @@ in
     jq
     keepassxc
     kind
+    libreoffice
+    libnotify
     libsForQt5.okular
     maven
+    maim
+    mob
     mpv
-    nerdfonts
     ngrok
     nushell
     nix-index
     nix-tree
-    nodejs-16_x
+    nodejs
     patchelf
     pciutils
     pcmanfm
+    pipenv
     ponysay
-    python2
+    pwgen
+    python3
     obsidian
-    obs-studio
     ocaml
     opam
     ranger
     rebar3
     #remarkable-toolchain
+    ripgrep
     rlwrap
     rustup
     screenkey
     silver-searcher
     simplescreenrecorder
+    shotcut
     shutter
     slack
     sqlite
@@ -96,24 +107,30 @@ in
     sqlitebrowser
     starship
     steampipe
+    python-swiftclient
     tlaplus
     transmission-gtk
     tdesktop
     udiskie
+    uiua
+    unison-ucm
     unzip
     upower
     usbutils
+    v4l-utils
     vlc
     w3m
+    watchman
     xorg.xbacklight
     xarchiver
     xclip
+    xdotool
     xmind
     xorg.xkbcomp
     xorg.xhost
     xorg.xev
     xxkb
-    youtube-dl
+    yt-dlp
     zellij
     zip
   ];
@@ -134,6 +151,7 @@ in
     "URxvt.keysym.Shift-Control-V" = "eval:paste_clipboard";
     "URxvt.keysym.Shift-Control-C" = "eval:selection_to_clipboard";
   };
+
 
   services.udiskie = {
     enable = true;
@@ -162,7 +180,8 @@ in
       with pkgs.vimPlugins // myvim.custom_plugins; [
         #        dhall-vim
         ember
-        cellular-automaton
+
+        # cellular-automaton
         #        harpoon
         #        mixformat
         #        nvim-treesitter
@@ -170,12 +189,12 @@ in
         #        popup-nvim
         #        telescope-nvim
         #        telescope-fzy-native-nvim
-        #        vim-elm-syntax
+        #        vim-true
         #        vim-fsharp
         #        vim-jsx-typescript
         #        vim-markdown
         #        vim-nix
-        #        vim-surround
+        vim-surround
         zenburn
 
         # Basics
@@ -213,7 +232,7 @@ in
         # Fast navigation
         lightspeed-nvim
         # Rainbow brackets
-        nvim-ts-rainbow
+        rainbow-delimiters-nvim
         # Notify window
         nvim-notify
         # Commenting
@@ -221,6 +240,9 @@ in
 
         # Syntax highlighting
         nvim-treesitter
+
+        nvim-treesitter-parsers.heex
+
         #        (nvim-treesitter.withPlugins
         #          (plugins: pkgs.nvim-ts-grammars.allGrammars)
         #        )
@@ -263,6 +285,9 @@ in
         # kdl
         kdl
 
+        #unison
+        unison
+
       ];
 
     extraPackages = with pkgs; [
@@ -282,10 +307,18 @@ in
       # Lua
       # sumneko-lua-language-server
       lua-language-server
+      # Python
+      python310Packages.python-lsp-server
+      python310Packages.python-lsp-black
+      python310Packages.yapf
+      python310Packages.pyls-isort
+      python310Packages.pylsp-mypy
       # Nix
       rnix-lsp
       nixpkgs-fmt
       statix
+      # Rust
+      rust-analyzer
       # Typescript
       nodePackages.typescript-language-server
       # VueJS
@@ -295,6 +328,8 @@ in
       # Telescope tools
       ripgrep
       fd
+      # Volar
+      nodePackages.volar
     ];
 
     #      extraConfig = builtins.readFile vim/vimrc;
@@ -307,6 +342,25 @@ in
 
   programs.tmux = {
     enable = true;
+  };
+
+  programs.helix = {
+    enable = true;
+    settings = {
+      theme = "onedark";
+      editor = {
+        line-number = "relative";
+        lsp.display-messages = true;
+      };
+      keys.normal = {
+        space = {
+          space = "file_picker";
+          w = ":w";
+          q = ":q";
+        };
+        esc = [ "collapse_selection" "keep_primary_selection" ];
+      };
+    };
   };
 
   programs.zsh = {
@@ -387,7 +441,7 @@ in
 
     functions = {
       fish_greeting = {
-        body = "fortune";
+        body = "";
       };
     };
     plugins = [
@@ -417,13 +471,6 @@ in
 
   programs.nushell = {
     enable = true;
-    settings = {
-      edit_mode = "vi";
-      startup = [ "alias la [] { ls -a }" "alias e [msg] { echo $msg }" ];
-      key_timeout = 10;
-      completion_mode = "circular";
-      no_auto_pivot = true;
-    };
   };
 
   programs.starship = {
@@ -512,11 +559,24 @@ in
     };
   };
 
-
-  services.gpg-agent = {
+  programs.obs-studio = {
     enable = true;
-    defaultCacheTtl = 1800;
-    enableSshSupport = true;
+    plugins = with pkgs.obs-studio-plugins; [
+      obs-multi-rtmp
+    ];
+  };
+
+  services = {
+    copyq = {
+      enable = true;
+    };
+
+    gpg-agent = {
+      enable = true;
+      defaultCacheTtl = 1800;
+      enableSshSupport = true;
+      pinentryFlavor = "curses";
+    };
   };
 
   programs.home-manager = {
